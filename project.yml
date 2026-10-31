@@ -1,0 +1,70 @@
+name: QRMagnifier
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    macOS: "15.6"
+configs:
+  Debug: debug
+  Release: release
+targets:
+  QRMagnifier:
+    type: application
+    platform: macOS
+    sources:
+      - src
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.qrmagnifier
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        MACOSX_DEPLOYMENT_TARGET: "15.6"
+        SWIFT_VERSION: 5.9
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_KEY_CFBundleDisplayName: QR Magnifier
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright (c) 2026"
+        INFOPLIST_KEY_NSHighResolutionCapable: YES
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleDisplayName: QR Magnifier
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+    postbuildScripts:
+      - name: Copy to Applications
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - $(CODESIGNING_FOLDER_PATH)/Contents/Info.plist
+        script: |
+          set -e
+
+          APP_DEST="/Applications/${FULL_PRODUCT_NAME}"
+          LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+
+          rm -rf "${APP_DEST}"
+          ditto "${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}" "${APP_DEST}"
+          # Test runs embed the test bundle; it doesn't belong in the installed app.
+          rm -rf "${APP_DEST}/Contents/PlugIns"
+          codesign --force --deep --sign - "${APP_DEST}"
+          "${LSREGISTER}" -f -R -trusted "${APP_DEST}"
+  QRMagnifierTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests
+    dependencies:
+      - target: QRMagnifier
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.qrmagnifier.tests
+        SWIFT_VERSION: 5.9
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  QRMagnifier:
+    build:
+      targets:
+        QRMagnifier: all
+    test:
+      targets:
+        - QRMagnifierTests
