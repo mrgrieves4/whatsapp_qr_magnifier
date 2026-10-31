@@ -6,6 +6,21 @@ It watches the WhatsApp window once a second, reads the QR code with Apple's Vis
 
 The code is only redrawn on your screen. It is never saved, logged, or sent anywhere.
 
+## Installing
+
+1. Download `QRMagnifier-<version>.zip` from the [Releases page](https://github.com/mrgrieves4/whatsapp_qr_magnifier/releases).
+2. Unzip it and move `QRMagnifier.app` to your Applications folder.
+3. Open it. Because the app isn't notarised by Apple, macOS says it can't verify it. Choose **Done** (not Move to Bin).
+4. Open System Settings → Privacy & Security, go to the Security section near the bottom, and choose **Open Anyway** next to the message about QRMagnifier. Confirm with your password or Touch ID. You only need to do this once.
+
+If you're comfortable with Terminal, this one command does the same as steps 3 and 4:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/QRMagnifier.app
+```
+
+Works on macOS 15.6 or later, on Apple silicon and Intel Macs.
+
 ## Using it
 
 1. Open WhatsApp on your Mac and press **Continue** so the QR code shows.
@@ -19,12 +34,19 @@ The WhatsApp window can sit behind QR Magnifier; it doesn't need to be visible.
 Requires macOS 15.6 or later, Xcode, and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
-xcodegen generate
-xcodebuild -scheme QRMagnifier -configuration Debug build
-xcodebuild -scheme QRMagnifier -configuration Debug test
+make build   # Debug build, installed to /Applications/QRMagnifier.app
+make test    # run the unit tests
+make dist    # Release build zipped to dist/QRMagnifier-<version>.zip
+make clean   # remove build output
 ```
 
-Each build copies the app to `/Applications/QR Magnifier.app` and signs it ad hoc. Because the signature changes with each build, macOS may ask for Screen Recording permission again after a rebuild.
+Each `make` run regenerates the Xcode project from `project.yml` first. Debug builds are signed ad hoc; because the signature changes with each build, macOS may ask for Screen Recording permission again after a rebuild.
+
+## Releasing
+
+1. Bump `MARKETING_VERSION` in `project.yml`.
+2. Run `make dist`.
+3. On GitHub, create a release with a tag such as `v0.1.0` and attach the zip from `dist/`.
 
 ## Layout
 

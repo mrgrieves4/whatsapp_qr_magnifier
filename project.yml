@@ -39,6 +39,11 @@ targets:
         script: |
           set -e
 
+          # Only install Debug builds; Release builds are zipped for distribution.
+          if [ "${CONFIGURATION}" != "Debug" ]; then
+            exit 0
+          fi
+
           APP_DEST="/Applications/${FULL_PRODUCT_NAME}"
           LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 

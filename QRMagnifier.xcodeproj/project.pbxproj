@@ -189,7 +189,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nAPP_DEST=\"/Applications/${FULL_PRODUCT_NAME}\"\nLSREGISTER=\"/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister\"\n\nrm -rf \"${APP_DEST}\"\nditto \"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\" \"${APP_DEST}\"\n# Test runs embed the test bundle; it doesn't belong in the installed app.\nrm -rf \"${APP_DEST}/Contents/PlugIns\"\ncodesign --force --deep --sign - \"${APP_DEST}\"\n\"${LSREGISTER}\" -f -R -trusted \"${APP_DEST}\"\n";
+			shellScript = "set -e\n\n# Only install Debug builds; Release builds are zipped for distribution.\nif [ \"${CONFIGURATION}\" != \"Debug\" ]; then\n  exit 0\nfi\n\nAPP_DEST=\"/Applications/${FULL_PRODUCT_NAME}\"\nLSREGISTER=\"/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister\"\n\nrm -rf \"${APP_DEST}\"\nditto \"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\" \"${APP_DEST}\"\n# Test runs embed the test bundle; it doesn't belong in the installed app.\nrm -rf \"${APP_DEST}/Contents/PlugIns\"\ncodesign --force --deep --sign - \"${APP_DEST}\"\n\"${LSREGISTER}\" -f -R -trusted \"${APP_DEST}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
