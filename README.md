@@ -34,7 +34,8 @@ The WhatsApp window can sit behind QR Magnifier; it doesn't need to be visible.
 Requires macOS 15.6 or later, Xcode, and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
-make build   # Debug build, installed to /Applications/QRMagnifier.app
+make build   # Debug build to build/Build/Products/Debug/QRMagnifier.app
+make run     # build, then open the Debug app
 make test    # run the unit tests
 make dist    # Release build zipped to dist/QRMagnifier-<version>.zip
 make clean   # remove build output

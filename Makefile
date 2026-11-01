@@ -3,10 +3,11 @@ APP_NAME := QRMagnifier
 VERSION := $(shell awk '/MARKETING_VERSION:/ { print $$2; exit }' project.yml)
 BUILD_DIR := build
 DIST_DIR := dist
+DEBUG_APP := $(BUILD_DIR)/Build/Products/Debug/$(APP_NAME).app
 RELEASE_APP := $(BUILD_DIR)/Build/Products/Release/$(APP_NAME).app
 ZIP := $(DIST_DIR)/$(APP_NAME)-$(VERSION).zip
 
-.PHONY: all project build test release dist clean
+.PHONY: all project build run test release dist clean
 
 all: build
 
@@ -14,9 +15,13 @@ all: build
 project:
 	xcodegen generate
 
-# Debug build; also installs to /Applications
+# Debug build into build/
 build: project
 	xcodebuild -scheme $(SCHEME) -configuration Debug -derivedDataPath $(BUILD_DIR) build
+
+# Build and open the Debug app
+run: build
+	open $(DEBUG_APP)
 
 test: project
 	xcodebuild -scheme $(SCHEME) -configuration Debug -derivedDataPath $(BUILD_DIR) test

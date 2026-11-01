@@ -31,28 +31,6 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.utilities
-    postbuildScripts:
-      - name: Copy to Applications
-        basedOnDependencyAnalysis: false
-        inputFiles:
-          - $(CODESIGNING_FOLDER_PATH)/Contents/Info.plist
-        script: |
-          set -e
-
-          # Only install Debug builds; Release builds are zipped for distribution.
-          if [ "${CONFIGURATION}" != "Debug" ]; then
-            exit 0
-          fi
-
-          APP_DEST="/Applications/${FULL_PRODUCT_NAME}"
-          LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
-
-          rm -rf "${APP_DEST}"
-          ditto "${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}" "${APP_DEST}"
-          # Test runs embed the test bundle; it doesn't belong in the installed app.
-          rm -rf "${APP_DEST}/Contents/PlugIns"
-          codesign --force --deep --sign - "${APP_DEST}"
-          "${LSREGISTER}" -f -R -trusted "${APP_DEST}"
   QRMagnifierTests:
     type: bundle.unit-test
     platform: macOS
